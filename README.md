@@ -1,2 +1,2 @@
-# C-
+# C++
 Repo for C++ code
