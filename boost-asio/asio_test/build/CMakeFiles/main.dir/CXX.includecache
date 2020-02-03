@@ -1,0 +1,22 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/egor/Documents/C-plus-plus/boost-asio/asio_test/main.cpp
+iostream
+-
+fstream
+-
+istream
+-
+ostream
+-
+string
+-
+boost/asio.hpp
+-
+
