@@ -1,0 +1,16 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/egor/Documents/C-plus-plus/boost-asio/asio_cmake/main.cpp
+iostream
+-
+boost/array.hpp
+-
+boost/asio.hpp
+-
+

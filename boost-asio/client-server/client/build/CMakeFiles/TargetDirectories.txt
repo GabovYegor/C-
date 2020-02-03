@@ -1,0 +1,3 @@
+/home/egor/Documents/C-plus-plus/boost-asio/client-server/client/build/CMakeFiles/rebuild_cache.dir
+/home/egor/Documents/C-plus-plus/boost-asio/client-server/client/build/CMakeFiles/main.dir
+/home/egor/Documents/C-plus-plus/boost-asio/client-server/client/build/CMakeFiles/edit_cache.dir

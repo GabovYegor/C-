@@ -1,0 +1,3 @@
+/home/egor/Documents/C-plus-plus/boost-asio/asio_cmake_2/build/CMakeFiles/rebuild_cache.dir
+/home/egor/Documents/C-plus-plus/boost-asio/asio_cmake_2/build/CMakeFiles/main.dir
+/home/egor/Documents/C-plus-plus/boost-asio/asio_cmake_2/build/CMakeFiles/edit_cache.dir
