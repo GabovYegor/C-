@@ -1,0 +1,16 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/egor/Documents/C-plus-plus/boost-asio/asyncEx/main.cpp
+boost/thread.hpp
+-
+boost/chrono.hpp
+-
+iostream
+-
+
