@@ -1,4 +1,4 @@
-#include <future>
+#include <thread>
 #include <iostream>
 #include <list>
 #include <vector>
@@ -6,41 +6,45 @@
 template <class Iter, class Func1, class Func2>
 auto map_reduce(Iter p, Iter q, Func1 f1, Func2 f2, size_t threads) -> decltype(f2(f1(*p), f1(*p))) {
     using f1Val = decltype(f1(*p));
+    std::vector <std::vector <f1Val>> resF1V;
+    resF1V.reserve(threads);
+    std::vector <std::thread> threadVec;
 
-    std::vector <std::future <std::vector<f1Val>>> fV;
     for(unsigned i = 0; i < threads - 1; ++i) {
         Iter t = p;
         ++p;
-        fV.emplace_back(std::async(std::launch::async, [f1](Iter s, Iter e) -> std::vector<f1Val> {
+        threadVec.emplace_back(std::thread([f1, &resF1V](Iter s, Iter e) {
                             std::vector<f1Val> f1res;
                             for (; s != e; ++s) {
                                 f1res.emplace_back(f1(*s));
                             }
-                            return f1res;
+                            resF1V.emplace_back(f1res);
                         }, t, p));
     }
 
-    fV.emplace_back(std::async(std::launch::async, [f1](Iter s, Iter e) -> std::vector<f1Val> {
+    threadVec.emplace_back(std::thread([f1, &resF1V](Iter s, Iter e) {
                         std::vector<f1Val> f1res;
                         for (; s != e; ++s) {
                             f1res.emplace_back(f1(*s));
                         }
-                        return f1res;
+                        resF1V.emplace_back(f1res);
                     }, p, q));
 
-    std::vector<f1Val> resF1 = fV[0].get();
-    for(size_t i = 1; i < fV.size(); ++i) {
-        std::vector<f1Val> temp = fV[i].get();
-        resF1.insert(resF1.end(), temp.begin(), temp.end());
+    for(auto& it: threadVec)
+        it.join();
+
+    std::vector<f1Val> resAfterF = resF1V[0];
+    for(size_t i = 1; i < threadVec.size(); ++i) {
+        std::vector<f1Val> temp = resF1V[i];
+        resAfterF.insert(resAfterF.end(), temp.begin(), temp.end());
     }
 
-    decltype(f2(f1(*p), f1(*p))) res = resF1[0];
-    for(size_t i = 1; i < resF1.size(); ++i)
-        res = f2(res, resF1[i]);
+    decltype(f2(f1(*p), f1(*p))) res = resAfterF[0];
+    for(size_t i = 1; i < resAfterF.size(); ++i)
+        res = f2(res, resAfterF[i]);
 
     return res;
 }
-
 
 int main() {
     std::list<int> l = {1,3,5,6,7,9};
