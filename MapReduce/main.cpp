@@ -3,10 +3,6 @@
 #include <functional>
 #include <list>
 #include <vector>
-#include <utility>
-#include <cmath>
-#include <type_traits>
-#include <cassert>
 
 template <class Iter, class Func1, class Func2>
 auto map_reduce(Iter p, Iter q, Func1 f1, Func2 f2, size_t threads) -> decltype(f2(f1(*p), f1(*p))) {
@@ -14,11 +10,10 @@ auto map_reduce(Iter p, Iter q, Func1 f1, Func2 f2, size_t threads) -> decltype(
 
     auto distance = std::distance(p, q);
     auto group_size = (distance + threads - 1) / threads;
-    std::cout << "Group size: " << group_size << std::endl;
     std::vector <std::future <std::vector<f1Val>>> fV;
-    for(unsigned i = 0; i < distance; ) {
+    for(unsigned i = 0; i < threads - 1; ++i) {
         Iter t = p;
-        for(unsigned j = 0; j < group_size && i < distance; ++i, ++j, ++p);
+        ++p;
         fV.emplace_back(std::async(std::launch::async, [f1](Iter s, Iter e) -> std::vector<f1Val> {
                             std::vector<f1Val> f1res;
                             for (; s != e; ++s) {
@@ -28,17 +23,23 @@ auto map_reduce(Iter p, Iter q, Func1 f1, Func2 f2, size_t threads) -> decltype(
                         }, t, p));
     }
 
-    assert(threads == fV.size()); // 6 el to 4 thread
-    std::cout << "Threads: " << fV.size() << std::endl;
+    fV.emplace_back(std::async(std::launch::async, [f1](Iter s, Iter e) -> std::vector<f1Val> {
+                        std::vector<f1Val> f1res;
+                        for (; s != e; ++s) {
+                            f1res.emplace_back(f1(*s));
+                        }
+                        return f1res;
+                    }, p, q));
+
     std::vector<f1Val> resF1 = fV[0].get();
     for(size_t i = 1; i < fV.size(); ++i) {
         std::vector<f1Val> temp = fV[i].get();
         resF1.insert(resF1.end(), temp.begin(), temp.end());
     }
 
-    decltype(f2(f1(*p), f1(*p))) res = 0;
-    for(auto it: resF1)
-        res = f2(res, it);
+    decltype(f2(f1(*p), f1(*p))) res = resF1[0];
+    for(size_t i = 1; i < resF1.size(); ++i)
+        res = f2(res, resF1[i]);
 
     return res;
 }
